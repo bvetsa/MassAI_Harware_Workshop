@@ -1,0 +1,19 @@
+{
+  "model_bytes": 6346,
+  "sha256": "f01ba0e654aa7c44e35d94ba8309807d90277f7949c71060a6af7ed200f5788f",
+  "tolerance": 1e-05,
+  "beats": [
+    {
+      "id": "228:160",
+      "annotation": "N",
+      "logit": -8.501585006713867,
+      "predicted": "N"
+    },
+    {
+      "id": "228:6299",
+      "annotation": "V",
+      "logit": 4.323415279388428,
+      "predicted": "V"
+    }
+  ]
+}
