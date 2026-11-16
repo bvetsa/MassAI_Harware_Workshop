@@ -12,6 +12,8 @@ LABELS = ('N (normal beat)', 'V (PVC)')
 HEADER = struct.Struct('<4sBB')
 BASELINE_WIDTH = 24
 SEED = 18
+TRAINING_SEEDS = (SEED, 7, 42)
+TRAINING_EPOCHS = {'standard': 45, 'short': 15}
 
 
 @dataclass
@@ -22,11 +24,15 @@ class Model:
     b2: np.float32
 
 
-def train(x, y, width=BASELINE_WIDTH):
-    """Fit on a seeded, class-balanced subset of the training recordings."""
+def train(x, y, width=BASELINE_WIDTH, *, seed=SEED, training='standard'):
+    """Fit on a seeded, class-balanced subset for the selected number of epochs."""
     if width not in WIDTHS:
         raise ValueError(f'Choose a hidden width from {WIDTHS}.')
-    rng = np.random.default_rng(SEED)
+    if not isinstance(seed, (int, np.integer)) or seed not in TRAINING_SEEDS:
+        raise ValueError(f'Choose a random seed from {TRAINING_SEEDS}.')
+    if training not in TRAINING_EPOCHS:
+        raise ValueError(f'Choose a training preset from {tuple(TRAINING_EPOCHS)}.')
+    rng = np.random.default_rng(seed)
     normal, pvc = (np.flatnonzero(y == label) for label in (0, 1))
     indices = np.r_[rng.choice(normal, len(pvc), replace=False), pvc]
     w1 = rng.normal(0, np.sqrt(2 / INPUTS), (width, INPUTS)).astype(np.float32)
@@ -37,7 +43,7 @@ def train(x, y, width=BASELINE_WIDTH):
     mean = [np.zeros_like(p) for p in parameters]
     variance = [np.zeros_like(p) for p in parameters]
     step = 0
-    for _ in range(45):
+    for _ in range(TRAINING_EPOCHS[training]):
         rng.shuffle(indices)
         for offset in range(0, len(indices), 256):
             batch = indices[offset:offset+256]

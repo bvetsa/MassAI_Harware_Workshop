@@ -4,10 +4,11 @@
 
 1. Extract this kit and open `02_Model_Golf_Challenge.ipynb` in [Google Colab](https://colab.research.google.com/) via **File → Upload notebook**.
 2. Run the setup cell on the CPU runtime. Select `model-golf-data.zip` when prompted. Keep the ZIP intact.
-3. Run the baseline. Start with 24 hidden neurons and 8-bit weight storage. Try a narrower model and compare the bytes, accuracy and PVC sensitivity.
-4. Pick one trial. Enter your team name in the submission cell, download the `.mgf` file and give it to the facilitator by minute 37.
+3. Run **A · Baseline** and **B · First optimization**. Compare the pretrained model with the INT8 version before training a model of your own.
+4. In **C · Model Golf**, rerun the trial cell with different widths and weight precision. Try changing the seed or training length if you have time. Use the practice table and plot to choose a trial.
+5. In **D · Submit**, enter the trial number and your team name. Download your `.mgf` and give the facilitator one file per team by minute 37.
 
-The final scoring floors are **80% accuracy** and **94% PVC sensitivity**. The smallest qualifying payload wins. Ties use sensitivity, then accuracy. An exact tie shares the rank.
+The organizer scores submissions on separate recordings. The final floors are **80% accuracy** and **94% PVC sensitivity**. The smallest qualifying payload wins. Ties use sensitivity, then accuracy. An exact tie shares the rank.
 
 Use `01_ECG_to_ESP32.ipynb` for the optional full demo. It creates the sketch and circuit files and shows the Python predictions to compare in Wokwi.
 

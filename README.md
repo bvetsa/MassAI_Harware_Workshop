@@ -28,9 +28,14 @@ python organizer/package_students.py
 Share `dist/MassAI_Model_Golf_Student.zip` with teams. It contains both notebooks and their data bundle.
 
 - [ECG to ESP32](01_ECG_to_ESP32.ipynb) evaluates the shipped FP32 model, plots the shared windows, builds the Wokwi project ZIP and optionally retrains the baseline.
-- [Model Golf Challenge](02_Model_Golf_Challenge.ipynb) evaluates the baseline, runs width and precision trials, and exports one team-named `.mgf` submission.
+- [Model Golf Challenge](02_Model_Golf_Challenge.ipynb) guides teams through a 17-minute challenge after setup.
 
 In [Colab](https://colab.research.google.com/), use **File → Upload notebook** with a CPU runtime. When setup prompts for a file, choose `model-golf-data.zip`. The data bundle already contains the processed windows and pretrained model. In local Jupyter, place the data ZIP beside the notebook and use Python with NumPy and Matplotlib. The notebooks also work directly from this organizer folder.
+
+1. **Baseline · 2 min.** Run the pretrained 24-neuron model and read its bytes, accuracy, PVC sensitivity and confusion counts.
+2. **First optimization · 4 min.** Quantize the same pretrained weights to INT8 and compare the two payloads. This step requires no training.
+3. **Model Golf · 10 min.** Rerun the trial cell with widths 4, 8, 16 or 24 and FP32 or INT8 weights. Optionally vary the seed (18, 7 or 42) or training preset (45 or 15 epochs). The table and chart mark the smallest model that meets both practice floors.
+4. **Submit · 1 min.** Enter a tested trial number and your team name. Download one `.mgf` per team and give it to the facilitator for final scoring on separate recordings.
 
 ## Score and deploy the winner
 
@@ -71,6 +76,9 @@ python organizer/build_baseline.py --out rebuilt
 
 # Compare native C++ and Python on every practice window for eight configurations.
 python verify/host_check.py
+
+# Exercise the student ZIP, the trial grid and submission using NumPy and Matplotlib.
+python verify/competition_check.py
 
 # Independently verify the recorded Wokwi serial output against Python.
 python verify/serial_check.py verify/wokwi-fp32.txt wokwi/expected.json
