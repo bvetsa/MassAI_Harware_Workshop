@@ -4,16 +4,7 @@ __pycache__/
 .ipynb_checkpoints/
 .venv/
 .pio/
-
-/raw-mitdb/
-/rebuilt/
-/dist/
-/model-golf-data.zip
 /model-golf-data/
 /baseline_export/
 /baseline-wokwi.zip
 /retrained-baseline.mgf
-/winner-wokwi/
-/entries/
-/leaderboard.csv
-/organizer/final.npz

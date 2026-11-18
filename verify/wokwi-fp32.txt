@@ -1,3 +1,0 @@
-MODEL bytes=6346 sha256=f01ba0e654aa7c44e35d94ba8309807d90277f7949c71060a6af7ed200f5788f
-BEAT 228:160 annotation=N esp32=-8.50158501 python=-8.50158501 predicted=N parity=PASS
-BEAT 228:6299 annotation=V esp32=4.32341528 python=4.32341528 predicted=V parity=PASS
