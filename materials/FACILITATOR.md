@@ -1,51 +1,72 @@
-# Model Golf facilitator runbook
+# Beat the Bytes · Facilitator guide
 
-**Wednesday, November 18, 2026 · 60 minutes · Mixed technical audience**
+November 18, 2026 · Junaid Pathan and Bhargava · 60 minutes
 
-At the end, teams should be able to explain what they compressed, show the actual model bytes, and explain a false negative and a false positive in this two-label task.
+This guide follows the 19 slides in `Beat_the_Bytes_Workshop (1).pptx`. Use the wording corrections in [the presentation audit](PRESENTATION_AUDIT.md) before presenting.
 
-## Run of show
+## Timing
 
-| Minutes | Lead | Participants |
+| Session time | Activity | Presenter cue |
 |---|---|---|
-| 0–8 | Start the FP32 Wokwi demo. Show the waveform pair and ask what lights each LED. Point to both serial predictions and `parity=PASS`. | Predict what changes when the ECG window changes. |
-| 8–15 | Define model width, storage precision, model bytes, accuracy and PVC sensitivity. | Explain how an always-normal classifier can achieve high accuracy while missing every PVC. |
-| 15–20 | Share the student ZIP. Demonstrate notebook upload and load its data ZIP. Show the 6,346-byte baseline result. | Form teams of 2–3, start CPU Colab, run setup and the baseline. |
-| 20–37 | Keep the challenge instructions visible. At minute 32, call five minutes to submission. | Try width 24 at INT8, then adjust width and precision. Choose and export one entry. |
-| 37–40 | Freeze entries. Run scoring. Open the CSV full screen and identify the first-place eligible entry. | Compare the submitted size and the scored metrics. |
-| 40–50 | Export the winner and start Wokwi. Identify the model by bytes and compare both logit lines with `expected.json`. | Compare predictions with the baseline and explain why matching implementations can still make a wrong classification. |
-| 50–60 | Discuss a recording-level failure from the organizer rehearsal. Discuss the limits of using pre-cut beats, class imbalance and new patients or devices. | Propose an evaluation that better exposes false alarms and missed PVCs. |
+| 0–15 | Introduction, slides 1–12 | Keep slide 5’s prepared demo to about 90 seconds. Explain N/PVC, width, quantization and both metrics. |
+| 15–20 | Slide 13, setup | Have everyone open the README’s Colab link, sign in, select CPU and run setup. Downloads are automatic. |
+| 20–25 | Slide 14, Stage A | Load the pretrained starter, record its size and inspect confusion counts. |
+| 25–30 | Slide 14, Stage B | Convert the same weights to INT8. Ask students to predict the byte reduction before running it. |
+| 30–45 | Slides 14–15, Stage C | Try widths and precision first. Offer seed/training variation to faster teams. Troubleshoot in pairs. |
+| 45–50 | Slide 14, Stage D | Teams choose a trial and export `.mgf`. Collect one volunteered model for the finale. |
+| 50–55 | Slide 16 | Invite two or three teams to share bytes, both metrics, and one change that helped. Prepare the volunteered firmware in parallel. |
+| 55–60 | Slides 17–19 | Run the exported model, compare both parity lines, ask one discussion question and close. |
 
-## Slide structure
+If onboarding takes longer, use the prepared baseline on the projector while helping students connect, and shorten optional seed experiments. The required first compression exercise uses pretrained weights.
 
-1. **Model Golf** · “How small can we make a heartbeat classifier?” Open Wokwi after the first audience prediction.
-2. **What the model sees** · Use `ecg-windows.png` or the baseline notebook plot. Define `N` and PVC. Point out that each window is aligned to a reference annotation and spans roughly half a second.
-3. **How models get smaller** · Draw `64 samples → ReLU hidden layer → one logit`. Fewer hidden neurons remove weights. INT8 weight storage replaces each FP32 weight with a byte and adds two scales. Activations and biases stay FP32.
-4. **Two ways to make a mistake** · Mark a missed PVC as a false negative and a normal beat flagged as PVC as a false positive. Accuracy uses all examples. Sensitivity uses only annotated PVCs.
-5. **Your turn** · Put the student ZIP and the chosen submission channel on screen. Keep `width`, `bits`, 80% accuracy, 94% PVC sensitivity and minute 37 visible during the lab.
-6. **Leaderboard and live deployment** · Screen-share the real CSV and Wokwi. Explain byte count, qualification and the tie-breaker. The firmware computes the logits and drives the LEDs.
-7. **Where the model struggled** · Share the aggregate and per-record results from the organizer rehearsal after submissions close. Ask what a pooled score hides.
+## Slide cues
 
-## Demo and scoring cues
+| Slide | Cue and audience action | Demo or fallback |
+|---|---|---|
+| 1 · Beat the Bytes | Introduce an educational classifier using real recorded beats and simulated hardware. | No medical-device performance claim. |
+| 2 · Today’s plan | State the 15/40/5 timing and confirm laptop + Google account. | A pair can share a browser if needed. |
+| 3 · AI on your body | Use wearables as motivation. Ask for a familiar example. | The lab models two beat annotations. |
+| 4 · Cloud tradeoffs | Explain that local inference can work offline. Our public-data training lab runs in hosted Colab. | The Wokwi firmware has no network code. |
+| 5 · Meet our chip | Turn the dial N → PVC, point to the waveform, LED and serial prediction. Press B1 and point to 6,346 → 570 bytes. | Say B1 selects a precompressed model. If simulation is unavailable, use the verification screenshot and replay logs. |
+| 6 · Our patient | Identify N as normal and V as PVC. | The dial chooses two recorded windows, with their original MIT-BIH IDs. |
+| 7 · Weighted score | Ask which input gets the largest weight in the example. | Weights are learned from the training partition. |
+| 8 · A model | Use the four-neuron diagram as one supported width. The starter has 24 hidden neurons. | Say score ≥ 0 predicts PVC. |
+| 9 · Two mistakes | Ask what an always-N predictor misses. | The practice set’s always-N score is 87.2% accuracy and 0% PVC sensitivity. |
+| 10 · Shrinking | Introduce width first, then stored precision. | INT8 biases and arithmetic stay FP32. |
+| 11 · Mission | Keep 80% accuracy and 94% sensitivity together. | Use practice floors for show-and-tell. |
+| 12 · Ready | Ask teams to choose a driver and a reader. | Swap roles during Stage C. |
+| 13 · Repository | Open the prominent Colab link, sign in and run setup. | Automatic pinned downloads, then manual ZIP fallback if needed. |
+| 14 · Lab | Load the starter, quantize, try smaller widths, export. | Keep this slide visible through the lab. |
+| 15 · Stuck | Change one setting, try wider/standard, rerun setup and cells in order for missing variables. | A presenter can run a shared notebook if a pair is blocked. |
+| 16 · Show and tell | Ask what changed, bytes reached, and what happened to PVC sensitivity. | Invite voluntary sharing. |
+| 17 · Finale | Run a volunteered `.mgf`, check identity and both parity lines. | Use the 570-byte prepared replay if the handoff is delayed, and name it as the rehearsal model. |
+| 18 · Discussion | Pick one question if time is short. Ask what evidence would be needed before patient use. | Matching Python proves implementation agreement on these cases. Evaluation across new patients/devices is a separate question. |
+| 19 · Continue | Point to notebook 01 and the repository. | Hardware execution beyond Wokwi remains a follow-up. |
 
-- Opening demo uses `wokwi/sketch.ino` and `wokwi/diagram.json`. Preload the two browser tabs before participants arrive. Normal fixture `228:160` predicts `N` and PVC fixture `228:6299` predicts `V` in the baseline. Both inference comparisons pass at absolute tolerance 0.00001.
-- Have teams send one `.mgf` using the workshop’s collection channel. Save each as `entries/Team Name.mgf`. Use one consistent filename per team and overwrite an earlier submission only if the team sends a replacement before the cutoff. Keep the facilitator’s final window data with the organizer.
-- Run `python organizer/score_entries.py entries --final-data "/path/to/organizer/final.npz" --out leaderboard.csv` with the final data from your local organizer kit. Show rank, team, bytes, accuracy, PVC sensitivity and eligibility on the projector. The CSV also has confusion counts and the payload fingerprint. Exact ties share rank. Pick one tied entry for the live demo if time permits only one.
-- Run `python organizer/deploy.py 'entries/Team Name.mgf' --out winner-wokwi`. Copy its two browser files into a new Wokwi ESP32 project and start. If an example is classified differently from its dataset annotation and parity still passes, show that distinction explicitly.
-- If Wokwi is unavailable, show the pre-recorded screenshots and serial logs in `verify/` while running the Python notebook locally. If the winning model misses the live demo window or no entry qualifies, use `organizer/rehearsal-wokwi/` and call it the 570-byte rehearsal model. If students cannot start Colab, use a single instructor notebook and have teams predict and record the result of each trial before you run it.
+## Prepare the opening demo
 
-## Remaining preparation
+1. Open [a new ESP32 Wokwi project](https://wokwi.com/projects/new/esp32). Paste `wokwi/interactive/sketch.ino` and `wokwi/interactive/diagram.json` into the matching tabs. Start the simulation before the talk. Both use the built-in Arduino core and Wire library.
+2. Keep the serial monitor visible. Dial below halfway selects `228:160` (annotated N). Dial above halfway selects `228:6299` (annotated V). The OLED draws the selected normalized waveform. The LED uses the computed class, green for N and red for V.
+3. Press B1 once to select the compact model. Press it again to return to the baseline. Confirm `MODEL active=... bytes=...` and `parity=PASS` after each change. The model fingerprint identifies the exact payload.
+4. Keep `wokwi/sketch.ino` and `wokwi/diagram.json` ready as the original two-case replay. `verify/wokwi-fp32.txt`, `verify/wokwi-int8.txt` and their screenshots provide offline evidence if the service is unavailable.
 
-**Monday, November 16**
+The dial selects discrete stored cases. Both trained model payloads are in the demo firmware, so selecting the smaller model changes the active payload while the whole firmware still contains both. There is no patient input, on-device training or on-device quantization.
 
-- Open the verified baseline in the browser you will present from. Familiarize yourself with the two serial lines and the replay timing. Save local copies of both verification screenshots.
-- Decide how teams will hand over files and designate the person running the leaderboard. Create an empty `entries/` folder and practice collecting one small file.
+## Prepare the closing finale
 
-**Tuesday, November 17**
+Before the event, install `requirements.txt` in the organizer’s Python environment. During export, have a volunteer send a `.mgf` through the channel you announce in the room. Save it as `entries/Team Name.mgf`.
 
-- From a fresh Colab session, upload the actual student notebook and ZIP. Try width 8, export a named `.mgf`, score it, generate the Wokwi sketch, and paste it into a fresh simulator. Test the student sharing link with an account outside the organizer team if available.
-- Rehearse the 37–50 minute handoff against a timer. Stage the baseline and rehearsal sketch files locally. Put the student kit link and collection instructions on slide 5 before sharing it.
+```sh
+python organizer/deploy.py 'entries/Team Name.mgf' --out winner-wokwi
+```
 
-**Wednesday, November 18, before doors open**
+The output folder name is an existing tool convention. This is a volunteered demonstration. Paste its `sketch.ino` and `diagram.json` into a second prepared Wokwi tab. Start, read its payload size, and check both predictions against the Python references in `expected.json`. This exported model uses the original replay circuit. A prediction may disagree with the dataset annotation while parity still passes. Explain the two comparisons.
 
-- Check venue Wi-Fi and open Colab, Wokwi and the presenter materials. Verify the green and red LEDs and both parity lines. Decide which tab stays on the projector during the lab.
+If the handoff is delayed, use `organizer/rehearsal-wokwi/` and state that it is the prepared 570-byte model. The optional CSV scorer stays available for later evaluation on the separate final dataset. It is outside the live show-and-tell workflow.
+
+## Before attendees arrive
+
+- Open the actual README link and check that setup completes on the venue Wi-Fi in a signed-in Colab CPU session. Run A, B, one trial and an export. Keep the manual student ZIP locally.
+- Start Wokwi, turn the dial both ways, press and release B1, and check waveform, LEDs and four parity combinations.
+- Apply the four slide wording corrections. Confirm the projector can show the Colab plot and serial log legibly.
+- Agree on a simple file collection channel and which presenter operates the finale. Stage the prepared replay backup.

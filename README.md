@@ -1,96 +1,89 @@
-# MassAI Model Golf
+# Beat the Bytes
 
-November 18, 2026 · 60 minutes · Laptop and browser
+**MassAI · November 18, 2026 · Laptop + Google account**
 
-Teams shrink a neural network that distinguishes two MIT-BIH beat labels, `N` (normal beat) and `V` (premature ventricular contraction, or PVC). The ESP32 replays the same 64-value ECG windows evaluated in Python and computes each prediction in C++.
+Shrink a heartbeat classifier, compare techniques, and share what you learned. The workshop has a 15-minute introduction, a 40-minute hands-on lab, and a 5-minute simulated ESP32 finale.
 
-## Run the verified Wokwi demo
+[**Open the Model Golf lab in Google Colab**](https://colab.research.google.com/github/bvetsa/MassAI_Harware_Workshop/blob/main/02_Model_Golf_Challenge.ipynb)
 
-1. Open a [new ESP32 project](https://wokwi.com/projects/new/esp32). Paste [the sketch](wokwi/sketch.ino) and [the circuit](wokwi/diagram.json) into its `sketch.ino` and `diagram.json` tabs.
-2. Press **Start the simulation**. The green LED shows predicted `N`. The red LED shows predicted `V`. The two windows repeat every four seconds.
-3. Confirm both serial lines say `parity=PASS`. The logged Python value is a reference for the check. The ESP32 value and LED state come from the MLP inference code.
+1. Sign in to Colab and use a CPU runtime. Run the setup cell. It downloads the public workshop files automatically.
+2. Run **A · Baseline** to load the pretrained starter. Read the model bytes, accuracy and PVC sensitivity together.
+3. Run **B · First optimization** to store the same weights in INT8. Compare the size and performance before and after.
+4. In **C · Model Golf**, change only the marked width, bits, seed and training settings. Rerun that cell to add trials to the table and chart. Aim for at least **80% accuracy** and **94% PVC sensitivity** on the practice recordings.
+5. In **D · Export and share**, enter a tested trial number and your team name. Download your `.mgf` and volunteer your byte count, metrics and best trick for show-and-tell.
 
-| Shared beat ID | MIT-BIH annotation | Python logit | Wokwi ESP32 logit | Prediction |
-|---|---|---:|---:|---|
-| `228:160` | N | −8.50158501 | −8.50158501 | N |
-| `228:6299` | V | +4.32341528 | +4.32341528 | V |
+The classifier distinguishes expert-annotated **N** (normal beat) and **V** (premature ventricular contraction, PVC) windows from MIT-BIH. It takes 64 preprocessed ECG values. Other beat labels are excluded. The practice recordings are separate from training. This educational exercise uses recorded windows and simulated hardware. [Data attribution](DATA_ATTRIBUTION.md)
 
-The demo pair was selected from the practice set as the first `N` and the first `V` in record 228 that the baseline classified correctly with an absolute logit of at least 1. The pair demonstrates parity. Accuracy and sensitivity use all eligible windows in the evaluation partition.
+## If you get stuck
 
-## Run the notebooks
+- **Download failed** · Rerun setup. A presenter can supply the student ZIP. Extract it, set `manual_upload = True` in setup, and choose its `model-golf-data.zip` when prompted.
+- **Name is undefined** · Run setup, then the cells above the error in order.
+- **History disappeared** · Run the trial-helper cell once at the start. Rerun only the marked settings cell for each experiment.
+- **Trial is below a floor** · Try a wider model or standard training and compare both metrics.
+- **Export error** · Pick a number from the current trial table. Use a team name beginning with a letter or digit.
 
-[**Open the Model Golf Challenge in Google Colab**](https://colab.research.google.com/github/bvetsa/MassAI_Harware_Workshop/blob/main/02_Model_Golf_Challenge.ipynb)
+The [optional ECG to ESP32 notebook](https://colab.research.google.com/github/bvetsa/MassAI_Harware_Workshop/blob/main/01_ECG_to_ESP32.ipynb) covers inference parity, firmware export and optional baseline retraining. Both notebooks also run locally with NumPy and Matplotlib.
 
-From a clone or downloaded source ZIP, build the student kit with Python 3.10–3.13.
+## Presenter demo
+
+Open a [new Wokwi ESP32 project](https://wokwi.com/projects/new/esp32), paste [the interactive sketch](wokwi/interactive/sketch.ino) and [its diagram](wokwi/interactive/diagram.json) into the matching tabs, and start the simulation.
+
+- Turn the dial below or above halfway to select a recorded N or PVC window. The OLED shows the selected ECG window, the LED shows the model prediction, and the serial log identifies the case and reference annotation.
+- Press **B1** to toggle between the pretrained **6,346-byte baseline** and **570-byte compressed model**. B1 selects a previously trained payload. Both payloads are compiled into this demonstration.
+- Look for `parity=PASS` for each selected case and model. The LEDs use the ESP32’s computed logit. The Python value is a comparison reference.
+
+The [facilitator guide](materials/FACILITATOR.md) follows all 19 slides and gives the timing and finale handoff. The [presentation audit](materials/PRESENTATION_AUDIT.md) includes exact wording corrections for slides 5, 8, 14 and 17.
+
+## What the bytes measure
+
+| Model | Learned parameters | FP32 payload | INT8 payload |
+|---|---:|---:|---:|
+| 64 → 24 → 1 | 1,585 | 6,346 B | 1,674 B |
+| 64 → 16 → 1 | 1,057 | 4,234 B | 1,122 B |
+| 64 → 8 → 1 | 529 | 2,122 B | 570 B |
+| 64 → 4 → 1 | 265 | 1,066 B | 294 B |
+
+The `.mgf` payload contains architecture metadata, weights, biases and INT8 scales. INT8 stores weights in one byte, while biases and inference accumulation use FP32. Firmware also contains code and example inputs, and execution uses RAM. Model payload size, firmware flash usage and RAM usage measure different things.
+
+## Organizer tools and offline kit
+
+From this folder, build the manual student kit with Python 3.10–3.13.
 
 ```sh
 python organizer/package_students.py
 ```
 
-Share `dist/MassAI_Model_Golf_Student.zip` with teams. It contains both notebooks and their data bundle.
+Share `dist/MassAI_Model_Golf_Student.zip` if the automatic download is unavailable. The ZIP has both notebooks, attribution and their offline data bundle. The download URLs in the notebooks pin public assets to commit `7241b01` and verify each file’s SHA-256. The baseline and data remain reproducible as the repository changes.
 
-- [ECG to ESP32](01_ECG_to_ESP32.ipynb) evaluates the shipped FP32 model, plots the shared windows, builds the Wokwi project ZIP and optionally retrains the baseline.
-- [Model Golf Challenge](02_Model_Golf_Challenge.ipynb) guides teams through a 17-minute challenge after setup.
-
-In Colab, sign in and run the setup cell on a CPU runtime. When prompted, choose `model-golf-data.zip` from the extracted student kit. The data bundle contains the processed windows and pretrained model. For the ECG to ESP32 notebook or a downloaded copy of the challenge, use **File → Upload notebook** in Colab. In local Jupyter, place the data ZIP beside the notebook and use Python with NumPy and Matplotlib. The notebooks also work directly from this organizer folder.
-
-1. **Baseline · 2 min.** Run the pretrained 24-neuron model and read its bytes, accuracy, PVC sensitivity and confusion counts.
-2. **First optimization · 4 min.** Quantize the same pretrained weights to INT8 and compare the two payloads. This step requires no training.
-3. **Model Golf · 10 min.** Rerun the trial cell with widths 4, 8, 16 or 24 and FP32 or INT8 weights. Optionally vary the seed (18, 7 or 42) or training preset (45 or 15 epochs). The table and chart mark the smallest model that meets both practice floors.
-4. **Submit · 1 min.** Enter a tested trial number and your team name. Download one `.mgf` per team and give it to the facilitator for final scoring on separate recordings.
-
-## Score and deploy the winner
-
-See [the facilitator runbook](materials/FACILITATOR.md) for timing, submission handling, the slide outline and fallbacks. Use `final.npz` from the separately distributed organizer kit.
+For the five-minute finale, collect a volunteered `.mgf` and export it into a fresh Wokwi replay project.
 
 ```sh
 python -m pip install -r requirements.txt
-mkdir -p entries
-python organizer/score_entries.py entries --final-data '/path/to/organizer/final.npz' --out leaderboard.csv
 python organizer/deploy.py 'entries/Team Name.mgf' --out winner-wokwi
 ```
 
-Put the collected team files in `entries/` before scoring, then replace `Team Name` with the first eligible team. Paste `winner-wokwi/sketch.ino` and `winner-wokwi/diagram.json` into Wokwi. The `organizer/rehearsal-wokwi/` pair is a preverified INT8 backup.
+Paste the generated `sketch.ino` and `diagram.json` into Wokwi and check both serial parity lines. The original [two-case replay](wokwi/sketch.ino) and [570-byte replay](organizer/rehearsal-wokwi/sketch.ino) provide prepared fallbacks. The replay diagram is alongside each sketch.
 
-The score counts the bytes actually compiled into the firmware’s model array, including the format header, weights, biases and scales. The 80% accuracy and 94% PVC-sensitivity floors are workshop rules chosen after the organizer dry run. Eligible entries rank by bytes ascending, PVC sensitivity descending, then accuracy descending. An exact tie shares the rank.
-
-## Data and model contract
-
-The workshop splits recordings before slicing. Neither 201 nor 202, the two recordings from the same subject, is present. The [public data manifest](organizer/source-manifest.json) lists the training and practice records, counts and source checksums. The final split stays in the organizer kit. The task uses reference `N` and `V` beats and excludes all other symbols. [Data attribution](DATA_ATTRIBUTION.md) · [PhysioNet dataset and split guidance](https://physionet.org/content/mitdb/1.0.0/)
-
-| Split | Recordings | N | V | Use |
-|---|---:|---:|---:|---|
-| Train | 11 | 23,774 | 3,997 | Fit weights on a seeded, class-balanced subset |
-| Practice | 5 | 10,452 | 1,530 | Compare trials and select demo windows |
-| Final | 4 | 8,889 | 687 | Score team submissions |
-
-In the 360 Hz MLII lead, take raw sample offsets `[-63, 129)` relative to each reference annotation. Average consecutive triples, subtract the window mean, divide by the larger of its peak absolute amplitude and 0.05 mV, and store the resulting 64 values as FP32. The MLP takes those values directly, applies one ReLU hidden layer, and emits a logit. A logit ≥ 0 predicts `V`. This is a classroom exercise using pre-cut, annotated windows from selected historical recordings.
-
-The `.mgf` format is `MGF1` followed by one byte each for hidden width and precision. INT8 adds two little-endian FP32 scales. The remaining fields, in order, are first-layer weights in hidden-neuron-major order, first-layer FP32 biases, output weights, and one FP32 output bias. Weight arrays use little-endian FP32 or signed INT8. INT8 weights are dequantized as read. Both runtimes use FP32 accumulation and activation.
-
-## Reproduce and verify
-
-From this folder:
+The CSV scorer remains available for optional organizer evaluation with the separate final data. It requires at least 80% accuracy and 94% PVC sensitivity, orders eligible payloads by bytes, sensitivity and accuracy, and shares exact ties. The live workshop uses practice floors and voluntary show-and-tell.
 
 ```sh
-# Retrain the reference and export its Wokwi files into a new folder.
-python organizer/build_baseline.py --out rebuilt
-
-# Compare native C++ and Python on every practice window for eight configurations.
-python verify/host_check.py
-
-# Exercise the student ZIP, the trial grid and submission using NumPy and Matplotlib.
-python verify/competition_check.py
-
-# Independently verify the recorded Wokwi serial output against Python.
-python verify/serial_check.py verify/wokwi-fp32.txt wokwi/expected.json
-python verify/serial_check.py verify/wokwi-int8.txt verify/int8-expected.json
-
-# Optional classroom data rebuild. Downloads the training and practice recordings.
-python -m pip install -r organizer/requirements-data.txt
-python organizer/prepare_data.py --out rebuilt --cache raw-mitdb
+python organizer/score_entries.py entries --final-data '/path/to/organizer/final.npz' --out leaderboard.csv
 ```
 
-The trainer produces repeatable bytes in the tested local environment. The shipped `baseline.mgf` fixes the exact firmware reference across platforms. For an offline firmware build with an existing PlatformIO setup, run `pio run -d wokwi`. `wokwi.toml` is supplied for the Wokwi VS Code extension.
+## Reproduction and verification
 
-See [verification evidence](verify/VERIFICATION.md) for measured results and verification scope.
+```sh
+python organizer/build_baseline.py --out rebuilt
+python verify/host_check.py
+python verify/competition_check.py
+python verify/serial_check.py verify/wokwi-fp32.txt wokwi/expected.json
+python verify/serial_check.py verify/wokwi-int8.txt verify/int8-expected.json
+python organizer/build_interactive.py
+pio run -d wokwi/interactive
+```
+
+The shared C++ inference routine implements the same MLP and zero-logit decision boundary as Python. The demo cases are `228:160` (N) and `228:6299` (V), selected from the practice set for the original parity demonstration. The model computes the output for the selected waveform.
+
+Source preprocessing takes MLII sample offsets `[-63, 129)` at 360 Hz around each reference annotation, averages consecutive triples, centers each window, divides by the larger of its peak absolute amplitude and 0.05 mV, and stores 64 FP32 values. The [public manifest](organizer/source-manifest.json) records all training/practice IDs and source hashes. The held-out final data stays with the organizer.
+
+To rebuild the classroom data, install `organizer/requirements-data.txt` and run `python organizer/prepare_data.py --out rebuilt --cache raw-mitdb`. See the [verification record](verify/VERIFICATION.md) for executed checks and their limits.
