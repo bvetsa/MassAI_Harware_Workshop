@@ -19,6 +19,8 @@ The demo pair was selected from the practice set as the first `N` and the first 
 
 ## Run the notebooks
 
+[**Open the Model Golf Challenge in Google Colab**](https://colab.research.google.com/github/bvetsa/MassAI_Harware_Workshop/blob/main/02_Model_Golf_Challenge.ipynb)
+
 From a clone or downloaded source ZIP, build the student kit with Python 3.10–3.13.
 
 ```sh
@@ -30,7 +32,7 @@ Share `dist/MassAI_Model_Golf_Student.zip` with teams. It contains both notebook
 - [ECG to ESP32](01_ECG_to_ESP32.ipynb) evaluates the shipped FP32 model, plots the shared windows, builds the Wokwi project ZIP and optionally retrains the baseline.
 - [Model Golf Challenge](02_Model_Golf_Challenge.ipynb) guides teams through a 17-minute challenge after setup.
 
-In [Colab](https://colab.research.google.com/), use **File → Upload notebook** with a CPU runtime. When setup prompts for a file, choose `model-golf-data.zip`. The data bundle already contains the processed windows and pretrained model. In local Jupyter, place the data ZIP beside the notebook and use Python with NumPy and Matplotlib. The notebooks also work directly from this organizer folder.
+In Colab, sign in and run the setup cell on a CPU runtime. When prompted, choose `model-golf-data.zip` from the extracted student kit. The data bundle contains the processed windows and pretrained model. For the ECG to ESP32 notebook or a downloaded copy of the challenge, use **File → Upload notebook** in Colab. In local Jupyter, place the data ZIP beside the notebook and use Python with NumPy and Matplotlib. The notebooks also work directly from this organizer folder.
 
 1. **Baseline · 2 min.** Run the pretrained 24-neuron model and read its bytes, accuracy, PVC sensitivity and confusion counts.
 2. **First optimization · 4 min.** Quantize the same pretrained weights to INT8 and compare the two payloads. This step requires no training.
